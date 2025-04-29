@@ -83,8 +83,7 @@ const UserAssignment: React.FC<UserAssignmentProps> = ({
           
           return {
             ...item,
-            assignedUsers: newAssignedUsers,
-            isSelected: false
+            assignedUsers: newAssignedUsers
           };
         }
         return item;

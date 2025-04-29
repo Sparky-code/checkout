@@ -13,6 +13,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import UserAssignment from './UserAssignment';
 import SummaryPage from './SummaryPage';
 import ManualEntry from './components/ManualEntry/ManualEntry';
+import PhotoUpload from './components/PhotoUpload/PhotoUpload';
 
 export interface Person {
   id: string;
@@ -407,117 +408,14 @@ const AdvancedSplit: React.FC = () => {
         <>
       {/* Page 1: Title, drag/upload/camera/manual */}
       {currentStep === 0 && (
-        <>
-          {/* Status Indicator */}
-          {uploadStatus === 'uploading' && <LinearProgress sx={{ mb: 2 }} />}
-          {uploadStatus === 'processing' && <Box display="flex" alignItems="center" mb={2}><CircularProgress size={24} /><span style={{marginLeft: 8}}>Processing...</span></Box>}
-          {uploadStatus === 'done' && <Alert severity="success" sx={{ mb: 2 }}>Processing complete!</Alert>}
-          {uploadStatus === 'error' && <Alert severity="error" sx={{ mb: 2 }}>There was an error processing your bill.</Alert>}
-          {/* Editable Title */}
-          <Box display="flex" alignItems="center" mb={2}>
-            {editingTitle ? (
-              <TextField
-                inputRef={titleInputRef}
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                onBlur={handleTitleBlur}
-                onKeyDown={handleTitleKeyDown}
-                placeholder={title ? title : 'Name of bill'}
-                size="small"
-                variant="standard"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <EditIcon color="action" sx={{ opacity: 0.2 }} />
-                    </InputAdornment>
-                  ),
-                  style: { fontWeight: 600, fontSize: 22, opacity: title ? 1 : 0.75 }
-                }}
-                sx={{ flex: 1, fontWeight: 600, fontSize: 22, opacity: title ? 1 : 0.75, borderBottom: '2px solid #bbb' }}
-              />
-            ) : (
-              <Box
-                onClick={handleTitleEdit}
-                sx={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  fontSize: 22,
-                  color: title ? 'text.primary' : 'text.secondary',
-                  opacity: title ? 1 : 0.75,
-                  borderBottom: '2px solid #bbb',
-                  minHeight: 36,
-                }}
-              >
-                {title || 'Name of bill'}
-                <EditIcon color="action" sx={{ ml: 1, opacity: 0.2 }} />
-              </Box>
-            )}
-          </Box>
-          {/* Drag-and-drop area */}
-          <Box
-            sx={{
-              width: '100%',
-              aspectRatio: '3/2',
-              maxWidth: 400,
-              mx: 'auto',
-              mb: 3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: dragActive ? '2px dashed #1976d2' : '2px dashed #bbb',
-              borderRadius: { xs: 0, sm: 3 },
-              bgcolor: dragActive ? 'action.hover' : 'background.paper',
-              transition: 'border 0.2s, background 0.2s',
-              position: 'relative',
-              cursor: 'pointer',
-            }}
-            onDrop={e => { handleDrop(e); setCurrentStep(1); }}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            <ArticleIcon sx={{ fontSize: 96, opacity: 0.2 }} />
-          </Box>
-          {/* Camera/Upload/Manual Entry Buttons */}
-              <Box sx={{ display: 'flex', gap: 2, mt: 1, mb: 2, alignItems: 'center' }}>
-                <Box sx={{ width: '16.666%' }}>
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                style={{ display: 'none' }}
-                onChange={e => { handleFileChange(e); setCurrentStep(1); }}
-              />
-              <Tooltip title="Use Camera">
-                <IconButton color="primary" onClick={() => cameraInputRef.current?.click()} sx={{ border: '1.5px solid', borderColor: 'primary.main', borderRadius: 1, width: '100%', height: 48 }}>
-                  <PhotoCameraIcon />
-                </IconButton>
-              </Tooltip>
-                </Box>
-                <Box sx={{ width: '16.666%' }}>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={e => { handleFileChange(e); setCurrentStep(1); }}
-              />
-              <Tooltip title="Upload Photo">
-                <IconButton color="primary" onClick={() => fileInputRef.current?.click()} sx={{ border: '1.5px solid', borderColor: 'primary.main', borderRadius: 1, width: '100%', height: 48 }}>
-                  <UploadFileIcon />
-                </IconButton>
-              </Tooltip>
-                </Box>
-                <Box sx={{ width: '66.666%' }}>
-              <Button variant="outlined" color="primary" sx={{ width: '100%', height: 48 }} onClick={handleManual}>
-                Enter manually
-              </Button>
-                </Box>
-              </Box>
-        </>
+        <PhotoUpload
+          onPhotoUpload={handlePhotoUploadAndAdvance}
+          onManualEntry={handleManual}
+          uploadStatus={uploadStatus}
+          setUploadStatus={setUploadStatus}
+          dragActive={dragActive}
+          setDragActive={setDragActive}
+        />
       )}
       {/* Page 2: OCR breakdown or manual entry */}
       {currentStep === 1 && ocrImage && (
@@ -538,12 +436,12 @@ const AdvancedSplit: React.FC = () => {
                     {items.map((item, idx) => (
                       <Box
                         key={item.id}
-                        sx={{
+                sx={{
                           width: '100%',
                           minHeight: 48,
                           p: 1,
-                          display: 'flex',
-                          alignItems: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
                           gap: 2,
                           borderTop: idx === 0 ? '1px solid' : 'none',
                           borderBottom: '1px solid',
@@ -558,11 +456,11 @@ const AdvancedSplit: React.FC = () => {
                         }}
                       >
                         {editingItemId === item.id ? (
-                          <Box
-                            sx={{
-                              width: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
                               gap: 2
                             }}
                             onBlur={(e) => {
@@ -788,8 +686,8 @@ const AdvancedSplit: React.FC = () => {
                               }}
                             >
                               <Close />
-                            </IconButton>
-                          </Box>
+                </IconButton>
+                </Box>
                         ) : (
                           <>
                             <Typography sx={{ width: 40, fontSize: 13 }}>{item.count || 1}</Typography>
@@ -806,10 +704,10 @@ const AdvancedSplit: React.FC = () => {
                               }}
                             >
                               <Close />
-                            </IconButton>
+                </IconButton>
                           </>
                         )}
-                      </Box>
+                </Box>
                     ))}
                     {/* Add Additional Items Button */}
                     <Box mt={2}>
@@ -835,14 +733,14 @@ const AdvancedSplit: React.FC = () => {
                         }}
                       >
                         Add additional items
-                  </Button>
-                    </Box>
+              </Button>
+                </Box>
               </Box>
-            </>
-          )}
+        </>
+      )}
         </Box>
       )}
-          {/* Page 3: Manual Entry */}
+      {/* Page 3: Manual Entry */}
       {currentStep === 2 && (
         <ManualEntry
           items={items}
