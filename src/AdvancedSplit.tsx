@@ -12,6 +12,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import UserAssignment from './UserAssignment';
 import SummaryPage from './SummaryPage';
+import ManualEntry from './components/ManualEntry/ManualEntry';
 
 export interface Person {
   id: string;
@@ -843,142 +844,21 @@ const AdvancedSplit: React.FC = () => {
       )}
           {/* Page 3: Manual Entry */}
       {currentStep === 2 && (
-        <Box>
-          <Typography variant="h6" mb={2}>Enter Items Manually</Typography>
-          {manualItems.map((item, idx) => (
-                <Box sx={{ display: 'flex', gap: 2, mb: 1, alignItems: 'center' }} key={idx}>
-                  <Box sx={{ width: '41.666%' }}>
-                <TextField
-                  label="Name"
-                  value={item.name}
-                  onChange={e => {
-                    const newItems = [...manualItems];
-                    newItems[idx].name = e.target.value;
-                    setManualItems(newItems);
-                  }}
-                  fullWidth
-                />
-                  </Box>
-                  <Box sx={{ width: '25%' }}>
-                <TextField
-                  label="Price"
-                  value={item.price}
-                  onChange={e => {
-                    const newItems = [...manualItems];
-                    newItems[idx].price = e.target.value;
-                    setManualItems(newItems);
-                  }}
-                  fullWidth
-                  inputProps={{ inputMode: 'decimal', pattern: '[0-9.]*' }}
-                />
-                  </Box>
-                  <Box sx={{ width: '16.666%' }}>
-                <TextField
-                  label="Count"
-                  value={item.count}
-                  onChange={e => {
-                    const newItems = [...manualItems];
-                    newItems[idx].count = Number(e.target.value);
-                    setManualItems(newItems);
-                  }}
-                  fullWidth
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                />
-                  </Box>
-                  <Box sx={{ width: '16.666%' }}>
-                <Button color="error" onClick={() => setManualItems(manualItems.filter((_, i) => i !== idx))}>Remove</Button>
-                  </Box>
-                </Box>
-          ))}
-          <Button onClick={() => setManualItems([...manualItems, { name: '', price: '', count: 1 }])} sx={{ mt: 1 }}>Add Item</Button>
-
-              {/* Summary Section */}
-              <Box sx={{ mt: 4, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                <Typography variant="h6" mb={2}>Summary</Typography>
-                
-                {/* Subtotal */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography>Subtotal:</Typography>
-                  <Typography>${manualItems.reduce((sum, item) => {
-                    const price = parseFloat(item.price) || 0;
-                    const count = item.count || 1;
-                    return sum + (price * count);
-                  }, 0).toFixed(2)}</Typography>
-        </Box>
-
-                {/* Tax */}
-                <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-                  <Typography>Tax:</Typography>
-                  <TextField
-                    size="small"
-                    value={manualTax}
-                    onChange={e => setManualTax(e.target.value)}
-                    required
-                    error={!manualTax && validationAttempted}
-                    helperText={!manualTax && validationAttempted ? "Required" : ""}
-                    inputProps={{ 
-                      style: { textAlign: 'right', width: '60px' },
-                      inputMode: 'decimal',
-                      pattern: '[0-9.]*'
-                    }}
-                    sx={{ width: '80px' }}
-                  />
-                  <Typography>$</Typography>
-      </Box>
-
-                {/* Tip */}
-                <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-                  <Typography>Tip:</Typography>
-                  <TextField
-                    size="small"
-                    value={manualTip}
-                    onChange={e => setManualTip(e.target.value)}
-                    required
-                    error={!manualTip && validationAttempted}
-                    helperText={!manualTip && validationAttempted ? "Required" : ""}
-                    inputProps={{ 
-                      style: { textAlign: 'right', width: '60px' },
-                      inputMode: 'decimal',
-                      pattern: '[0-9.]*'
-                    }}
-                    sx={{ width: '80px' }}
-                  />
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="caption">$</Typography>
-                    <Switch
-                      size="small"
-                      checked={isTipPercentage}
-                      onChange={() => setIsTipPercentage(!isTipPercentage)}
-                    />
-                    <Typography variant="caption">%</Typography>
-                  </Box>
-                </Box>
-
-                {/* Total */}
-                {manualTax && manualTip && (
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                    <Typography variant="subtitle1">Total:</Typography>
-                    <Typography variant="subtitle1">
-                      ${(manualItems.reduce((sum, item) => {
-                        const price = parseFloat(item.price) || 0;
-                        const count = item.count || 1;
-                        return sum + (price * count);
-                      }, 0) + 
-                      (parseFloat(manualTax) || 0) + 
-                      (isTipPercentage ? 
-                        (manualItems.reduce((sum, item) => {
-                          const price = parseFloat(item.price) || 0;
-                          const count = item.count || 1;
-                          return sum + (price * count);
-                        }, 0) * (parseFloat(manualTip) || 0) / 100) : 
-                        (parseFloat(manualTip) || 0)
-                      )).toFixed(2)}
-                    </Typography>
-                  </Box>
-                  )}
-                </Box>
-            </Box>
-          )}
+        <ManualEntry
+          items={items}
+          setItems={setItems}
+          manualItems={manualItems}
+          setManualItems={setManualItems}
+          manualTax={manualTax}
+          setManualTax={setManualTax}
+          manualTip={manualTip}
+          setManualTip={setManualTip}
+          isTipPercentage={isTipPercentage}
+          setIsTipPercentage={setIsTipPercentage}
+          validationAttempted={validationAttempted}
+          setValidationAttempted={setValidationAttempted}
+        />
+      )}
           {/* Page 4: User Assignment */}
           {currentStep === 3 && (
             <UserAssignment 
