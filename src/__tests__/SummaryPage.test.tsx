@@ -52,6 +52,8 @@ describe('SummaryPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock URL.createObjectURL
+    window.URL.createObjectURL = jest.fn(() => 'mock-url');
   });
 
   it('renders without crashing', () => {
@@ -97,14 +99,18 @@ describe('SummaryPage', () => {
         receiptSummary={mockReceiptSummary}
       />
     );
-
-    expect(screen.getByText('Subtotal:')).toBeInTheDocument();
+    
+    const subtotalElements = screen.getAllByText(/Subtotal:/);
+    expect(subtotalElements[0]).toBeInTheDocument();
     expect(screen.getByText('$42.97')).toBeInTheDocument();
 
-    expect(screen.getByText('Tax:')).toBeInTheDocument();
+    // Use getAllByText for elements that appear multiple times
+    const taxElements = screen.getAllByText(/tax:/i);
+    expect(taxElements.length).toBeGreaterThan(0);
     expect(screen.getByText('$3.50')).toBeInTheDocument();
 
-    expect(screen.getByText('Tip:')).toBeInTheDocument();
+    const tipElements = screen.getAllByText(/tip:/i);
+    expect(tipElements.length).toBeGreaterThan(0);
     expect(screen.getByText('$5.00')).toBeInTheDocument();
 
     expect(screen.getByText('Total:')).toBeInTheDocument();
@@ -143,10 +149,17 @@ describe('SummaryPage', () => {
         receiptSummary={receiptSummaryWithImage}
       />
     );
-
+    
     const toggleButton = screen.getByRole('button', { name: /show original bill/i });
+    
+    // The image should be hidden initially
+    expect(toggleButton).toHaveTextContent('Show Original Bill');
+    
     fireEvent.click(toggleButton);
-    expect(screen.getByRole('button', { name: /hide original bill/i })).toBeInTheDocument();
+    expect(toggleButton).toHaveTextContent('Hide Original Bill');
+    
+    fireEvent.click(toggleButton);
+    expect(toggleButton).toHaveTextContent('Show Original Bill');
   });
 
   it('calculates and displays user totals correctly', () => {

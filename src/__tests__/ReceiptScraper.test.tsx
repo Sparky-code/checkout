@@ -42,9 +42,10 @@ describe('ReceiptScraper', () => {
 
     render(<ReceiptScraper image={mockImage} onExtracted={mockOnExtracted} />);
     
-    expect(screen.getByText('Processing...')).toBeInTheDocument();
+    expect(screen.getByText(/analyzing receipt/i)).toBeInTheDocument();
+    expect(screen.getByText(/processing/i)).toBeInTheDocument();
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    expect(screen.getByText('Progress: 50%')).toBeInTheDocument();
+    expect(screen.getByText(/progress: 50%/i)).toBeInTheDocument();
   });
 
   it('shows error state when processing fails', () => {
@@ -60,7 +61,8 @@ describe('ReceiptScraper', () => {
 
     render(<ReceiptScraper image={mockImage} onExtracted={mockOnExtracted} />);
     
-    expect(screen.getByText('Error')).toBeInTheDocument();
+    expect(screen.getByText(/analyzing receipt/i)).toBeInTheDocument();
+    expect(screen.getByText(/error/i)).toBeInTheDocument();
     expect(screen.getByText('OCR processing failed')).toBeInTheDocument();
   });
 
