@@ -56,7 +56,7 @@ const SummaryPage: React.FC<SummaryPageProps> = ({
           >
             {showImage ? 'Hide Original Bill' : 'Show Original Bill'}
           </Button>
-          <Collapse in={showImage}>
+          <Collapse in={showImage} data-testid="bill-image-collapse">
             <Box
               component="img"
               src={typeof receiptSummary.originalImage === 'string' 
