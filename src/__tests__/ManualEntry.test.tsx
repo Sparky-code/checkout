@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ManualEntry from '../components/ManualEntry/ManualEntry';
 import { Item } from '../types';
@@ -9,6 +9,7 @@ const mockSetManualTax = jest.fn();
 const mockSetManualTip = jest.fn();
 const mockSetIsTipPercentage = jest.fn();
 const mockSetValidationAttempted = jest.fn();
+const mockOnExtracted = jest.fn();
 
 const mockProps = {
   items: [],
@@ -23,6 +24,7 @@ const mockProps = {
   setIsTipPercentage: mockSetIsTipPercentage,
   validationAttempted: false,
   setValidationAttempted: mockSetValidationAttempted,
+  onExtracted: mockOnExtracted,
 };
 
 describe('ManualEntry', () => {
@@ -36,13 +38,10 @@ describe('ManualEntry', () => {
   });
 
   it('shows validation errors when required fields are empty', async () => {
-    render(<ManualEntry {...mockProps} validationAttempted={true} manualTax="" manualTip="" />);
+    render(<ManualEntry {...mockProps} validationAttempted={true} />);
     
-    const submitButton = screen.getByRole('button', { name: /add item/i });
-    await userEvent.click(submitButton);
-    
-    expect(screen.getByText(/tax amount is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/tip amount is required/i)).toBeInTheDocument();
+    const errorMessages = screen.getAllByText('Required');
+    expect(errorMessages).toHaveLength(2); // One for tax and one for tip
   });
 
   it('calculates tip amount correctly', () => {

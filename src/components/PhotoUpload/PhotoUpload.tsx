@@ -44,7 +44,6 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       return;
     }
 
-    setUploadStatus('uploading');
     try {
       const reader = new FileReader();
       
@@ -55,6 +54,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
       reader.onload = async () => {
         try {
+          setUploadStatus('uploading');
           // Simulate upload delay
           await new Promise(res => setTimeout(res, 500));
           setUploadStatus('processing');
@@ -121,7 +121,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       {uploadStatus === 'processing' && (
         <Box display="flex" alignItems="center" mb={2}>
           <CircularProgress size={24} />
-          <span style={{ marginLeft: 8 }}>Processing...</span>
+          <Typography sx={{ ml: 1 }}>Processing...</Typography>
         </Box>
       )}
       {uploadStatus === 'done' && <Alert severity="success" sx={{ mb: 2 }}>Processing complete!</Alert>}
@@ -198,53 +198,48 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       </Box>
 
       {/* Camera/Upload/Manual Entry Buttons */}
-      <Box sx={{ display: 'flex', gap: 2, mt: 1, mb: 2, alignItems: 'center' }}>
-        <Box sx={{ width: '16.666%' }}>
+      <Box display="flex" justifyContent="center" gap={2}>
+        <Box>
           <input
-            ref={cameraInputRef}
             type="file"
             accept="image/*"
             capture="environment"
-            style={{ display: 'none' }}
             onChange={handleFileChange}
-            aria-label="Upload receipt using camera"
+            style={{ display: 'none' }}
+            ref={cameraInputRef}
             data-testid="camera-input"
           />
           <IconButton
             color="primary"
             onClick={() => cameraInputRef.current?.click()}
-            sx={{ border: '1.5px solid', borderColor: 'primary.main', borderRadius: 1, width: '100%', height: 48 }}
-            aria-label="Use Camera"
             data-testid="camera-button"
           >
             <PhotoCameraIcon />
           </IconButton>
         </Box>
-        <Box sx={{ width: '16.666%' }}>
+        <Box>
           <input
-            ref={fileInputRef}
             type="file"
             accept="image/*"
-            style={{ display: 'none' }}
             onChange={handleFileChange}
-            aria-label="Upload receipt"
+            style={{ display: 'none' }}
+            ref={fileInputRef}
             data-testid="file-input"
           />
           <IconButton
             color="primary"
             onClick={() => fileInputRef.current?.click()}
-            sx={{ border: '1.5px solid', borderColor: 'primary.main', borderRadius: 1, width: '100%', height: 48 }}
-            aria-label="Upload Photo"
             data-testid="file-button"
           >
             <UploadFileIcon />
           </IconButton>
         </Box>
-        <Box sx={{ width: '66.666%' }}>
-          <Button variant="outlined" color="primary" sx={{ width: '100%', height: 48 }} onClick={onManualEntry}>
-            Enter manually
-          </Button>
-        </Box>
+        <Button
+          variant="outlined"
+          onClick={onManualEntry}
+        >
+          Enter manually
+        </Button>
       </Box>
     </Box>
   );

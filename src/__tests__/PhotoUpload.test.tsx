@@ -73,28 +73,40 @@ describe('PhotoUpload', () => {
   });
 
   it('validates file types on upload', async () => {
-    render(<PhotoUpload {...mockProps} />);
+    const { rerender } = render(<PhotoUpload {...mockProps} />);
     
     const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
     const input = screen.getByTestId('file-input');
     
     await act(async () => {
-      await userEvent.upload(input, file);
+      const changeEvent = {
+        target: {
+          files: [file]
+        }
+      };
+      fireEvent.change(input, changeEvent);
     });
 
     await waitFor(() => {
       expect(mockSetUploadStatus).toHaveBeenCalledWith('error');
-      expect(screen.getByText('Please upload an image file (jpg, png, etc).')).toBeInTheDocument();
+    });
+
+    // Re-render with error status
+    rerender(<PhotoUpload {...mockProps} uploadStatus="error" />);
+
+    await waitFor(() => {
+      const errorAlert = screen.getByText('Please upload an image file (jpg, png, etc).');
+      expect(errorAlert).toBeInTheDocument();
     });
   });
 
   it('handles file upload errors', async () => {
-    render(<PhotoUpload {...mockProps} />);
+    const { rerender } = render(<PhotoUpload {...mockProps} />);
     
     const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
     const input = screen.getByTestId('file-input');
     
-    // Create a proper FileReader mock that triggers error
+    // Mock FileReader
     const mockFileReader = {
       readAsDataURL: jest.fn(),
       onerror: null as any,
@@ -110,19 +122,29 @@ describe('PhotoUpload', () => {
     window.FileReader = jest.fn(() => mockFileReader);
     
     await act(async () => {
-      await userEvent.upload(input, file);
-      // Simulate the FileReader error
-      mockFileReader.readAsDataURL.mockImplementation(() => {
-        if (mockFileReader.onerror) {
-          mockFileReader.onerror(new Event('error'));
+      const changeEvent = {
+        target: {
+          files: [file]
         }
-      });
-      mockFileReader.readAsDataURL(file);
+      };
+      fireEvent.change(input, changeEvent);
+      
+      // Trigger the error
+      if (mockFileReader.onerror) {
+        mockFileReader.onerror(new ErrorEvent('error'));
+      }
     });
 
     await waitFor(() => {
       expect(mockSetUploadStatus).toHaveBeenCalledWith('error');
-      expect(screen.getByText('Error reading file')).toBeInTheDocument();
+    });
+
+    // Re-render with error status
+    rerender(<PhotoUpload {...mockProps} uploadStatus="error" />);
+
+    await waitFor(() => {
+      const errorAlert = screen.getByText('Error reading file');
+      expect(errorAlert).toBeInTheDocument();
     });
   });
 
