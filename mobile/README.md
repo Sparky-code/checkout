@@ -1,3 +1,31 @@
+# checkout / mobile
+
+The Expo / React Native version of the checkout bill splitter. It was the
+separate `chek` repo until it was folded in here (see the root README).
+
+## What's here
+
+- `src/components/BasicSplit/`: an equal split of a total between N people.
+- `src/utils/checkoutUtils.ts`: pure split logic with tests: basic split,
+  advanced item-assignment split, initials, validation, person creation. This
+  is a cleaner version of logic the web app (`../src`) keeps inside
+  components and hooks. It is the natural candidate to share between the two apps.
+- `src/types/checkout.ts`: domain types, a superset of `../src/types`.
+- `prompts/`: coding guidelines and strategies for this app (React Native specific).
+
+## Known issues
+
+- `src/components/Button/Button.test.tsx`: 23 tests fail because they call
+  `Button(...)` as a plain function instead of rendering it, so `useState`
+  has no React dispatcher. This predates the fold.
+- Husky commit hooks (`.husky/`) no longer install: `npm install` prints
+  ".git can't be found" because the git root is now the parent folder.
+  Commits are not linted until hooks are set up at the repo root.
+
+---
+
+## Template notes (expo-ts)
+
 <p align="center">
   An opinionated template that will allow you to start a new React Native project quickly with Expo, TypeScript, Prettier, ESLint, and some custom configurations that will make development process better. 💖
 </p>

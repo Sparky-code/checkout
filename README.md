@@ -1,4 +1,39 @@
-# React + TypeScript + Vite
+# checkout (bill splitter)
+
+Split a restaurant bill between people: photograph the receipt (OCR with
+tesseract.js) or enter items by hand, assign items to people, and get each
+person's share including tax and tip.
+
+## Layout
+
+| Path | What it is |
+|---|---|
+| `src/` | Web app: React 19 + Vite + MUI. Receipt scanning, basic and advanced splits, summary page. |
+| `mobile/` | Expo / React Native port (formerly the separate `chek` repo). Has a basic split screen and a pure split-logic module, `mobile/src/utils/checkoutUtils.ts`. See [mobile/README.md](mobile/README.md). |
+
+The two apps have separate `package.json` files and toolchains. Root `jest` and
+`eslint` cover only `src/`; run the mobile ones from `mobile/`.
+
+## Development
+
+```bash
+npm install && npm run dev      # web
+npm test                        # web tests
+
+cd mobile && npm install
+npm run web                     # or ios / android
+npm test                        # mobile tests
+```
+
+## History
+
+`mobile/` was folded in from [Sparky-code/chek](https://github.com/Sparky-code/chek)
+(branch `chek/initial-commit`) with `git subtree add`, so its commits are
+part of this repo's history.
+
+---
+
+## Template notes (Vite)
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
