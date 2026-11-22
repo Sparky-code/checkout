@@ -12,7 +12,8 @@ person's share including tax and tip.
 | `mobile/` | Expo / React Native port (formerly the separate `chek` repo). Has a basic split screen and a pure split-logic module, `mobile/src/utils/checkoutUtils.ts`. See [mobile/README.md](mobile/README.md). |
 
 The two apps have separate `package.json` files and toolchains. Root `jest` and
-`eslint` cover only `src/`; run the mobile ones from `mobile/`.
+`eslint` cover only `src/`; run the mobile ones from `mobile/`. Known issues and
+the plan to share split logic between the apps are in [ROADMAP.md](ROADMAP.md).
 
 ## Development
 
